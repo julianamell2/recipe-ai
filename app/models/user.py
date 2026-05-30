@@ -1,6 +1,7 @@
 from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy.orm import relationship
 
 from app.database import Base
 
@@ -15,3 +16,9 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
 
     password_hash = Column(String(255), nullable=False)
+
+    ingredientes = relationship(
+        "Ingredient",
+        back_populates="usuario",
+        cascade="all, delete-orphan"
+    )

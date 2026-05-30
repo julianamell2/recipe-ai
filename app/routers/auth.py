@@ -10,6 +10,7 @@ from app.schemas.user import UserCreate
 from app.security import hash_password
 
 from app.schemas.user import UserLogin
+from fastapi.security import OAuth2PasswordRequestForm
 from app.security import verify_password
 from app.security import create_access_token
 
@@ -53,13 +54,13 @@ def register(
 
 @router.post("/login")
 def login(
-    user: UserLogin,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
 
     db_user = (
         db.query(User)
-        .filter(User.email == user.email)
+        .filter(User.email == form_data.username)
         .first()
     )
 
@@ -70,7 +71,7 @@ def login(
         )
 
     if not verify_password(
-        user.password,
+        form_data.password,
         db_user.password_hash
     ):
         raise HTTPException(
