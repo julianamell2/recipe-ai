@@ -1,4 +1,5 @@
 from app.services.llm_service import build_prompt
+import json
 
 
 
@@ -28,3 +29,18 @@ def test_prompt_not_empty():
     )
 
     assert len(prompt) > 0    
+
+def test_parse_valid_llm_response():
+
+    content = """
+    {
+        "nombre_plato": "Arroz con pollo",
+        "ingredientes": ["pollo", "arroz"],
+        "pasos": ["Paso 1"]
+    }
+    """
+
+    result = json.loads(content)
+
+    assert result["nombre_plato"] == "Arroz con pollo"
+    assert len(result["ingredientes"]) == 2
