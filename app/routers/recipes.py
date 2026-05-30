@@ -13,6 +13,8 @@ from app.models.recipe import Recipe
 from app.models.ingredient import Ingredient
 
 from app.services.llm_service import generate_recipe
+from fastapi import HTTPException
+from app.models.rating import Rating
 
 router = APIRouter(
     prefix="/recipes",
@@ -87,3 +89,41 @@ def generate_recipe_endpoint(
     db.refresh(recipe)
 
     return recipe
+
+@router.delete("/{recipe_id}")
+def delete_recipe(
+    recipe_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    recipe = (
+        db.query(Recipe)
+        .filter(
+            Recipe.id == recipe_id,
+            Recipe.usuario_id == current_user.id
+        )
+        .first()
+    )
+
+    if not recipe:
+        raise HTTPException(
+            status_code=404,
+            detail="Receta no encontrada"
+        )
+
+    (
+        db.query(Rating)
+        .filter(
+            Rating.receta_id == recipe_id
+        )
+        .delete()
+    )
+
+    db.delete(recipe)
+
+    db.commit()
+
+    return {
+        "message": "Receta eliminada"
+    }
