@@ -11,6 +11,8 @@ from app.security import get_current_user
 from fastapi import Depends
 from app.models.ingredient import Ingredient
 from app.routers.ingredients import router as ingredients_router
+from app.models.recipe import Recipe
+from app.routers.recipes import router as recipes_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -20,6 +22,7 @@ app = FastAPI(
 
 app.include_router(auth_router)
 app.include_router(ingredients_router)
+app.include_router(recipes_router)
 
 @app.get("/")
 def root():
