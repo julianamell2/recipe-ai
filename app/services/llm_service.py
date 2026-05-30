@@ -15,9 +15,9 @@ OPENROUTER_MODEL = os.getenv(
 )
 
 
-def generate_recipe(ingredients):
+def build_prompt(ingredients):
 
-    prompt = f"""
+    return f"""
 Genera una receta usando únicamente estos ingredientes:
 
 {', '.join(ingredients)}
@@ -41,6 +41,11 @@ Formato exacto:
   "nivel_dificultad": ""
 }}
 """
+
+
+def generate_recipe(ingredients):
+
+    prompt = build_prompt(ingredients)
 
     response = requests.post(
         "https://openrouter.ai/api/v1/chat/completions",
