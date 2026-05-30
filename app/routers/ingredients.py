@@ -8,6 +8,7 @@ from app.models.ingredient import Ingredient
 from app.models.user import User
 from app.schemas.ingredient import IngredientCreate
 from app.security import get_current_user
+from fastapi import HTTPException
 
 router = APIRouter(
     prefix="/ingredients",
@@ -49,3 +50,32 @@ def get_ingredients(
     )
 
     return ingredients
+
+@router.delete("/{ingredient_id}")
+def delete_ingredient(
+    ingredient_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    ingredient = (
+        db.query(Ingredient)
+        .filter(
+            Ingredient.id == ingredient_id,
+            Ingredient.usuario_id == current_user.id
+        )
+        .first()
+    )
+
+    if not ingredient:
+        raise HTTPException(
+            status_code=404,
+            detail="Ingrediente no encontrado"
+        )
+
+    db.delete(ingredient)
+    db.commit()
+
+    return {
+        "message": "Ingrediente eliminado"
+    }
