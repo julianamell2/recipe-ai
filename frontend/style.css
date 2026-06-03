@@ -1,0 +1,16 @@
+body {
+    background-color: #f5f7fa;
+}
+
+.card {
+    border: none;
+    border-radius: 16px;
+}
+
+.btn-primary {
+    border-radius: 10px;
+}
+
+input {
+    border-radius: 10px;
+}
