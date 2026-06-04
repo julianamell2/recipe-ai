@@ -19,6 +19,7 @@ const generatedRecipe = document.getElementById("generatedRecipe");
 const recipesList = document.getElementById("recipesList");
 const refreshRecipesBtn = document.getElementById("refreshRecipesBtn");
 
+
 let userRatings = [];
 
 function getToken() {
@@ -30,7 +31,7 @@ function showDashboard() {
     loginForm.closest(".card").classList.add("d-none");
 
     loadIngredients();
-    loadRecipes();
+    loadRatingsAndRecipes();
 }
 
 function showLogin() {
@@ -382,6 +383,63 @@ async function loadRecipes() {
 }
 
 
+async function loadRatingsAndRecipes() {
+    await loadRatings();
+    await loadRecipes();
+}
+
+
+async function loadRatings() {
+    const token = getToken();
+
+    if (!token) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/ratings/`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("No se pudieron cargar las calificaciones");
+        }
+
+        userRatings = await response.json();
+
+    } catch (error) {
+        userRatings = [];
+    }
+}
+
+
+function getRatingForRecipe(recipeId) {
+    const ratingsForRecipe = userRatings.filter(function (rating) {
+        return rating.receta_id === recipeId;
+    });
+
+    if (ratingsForRecipe.length === 0) {
+        return null;
+    }
+
+    return ratingsForRecipe[ratingsForRecipe.length - 1];
+}
+
+
+function renderStars(value) {
+    let stars = "";
+
+    for (let i = 0; i < value; i++) {
+        stars += "⭐";
+    }
+
+    return stars;
+}
+
+
 function renderRecipes(recipes) {
     if (recipes.length === 0) {
         recipesList.innerHTML = `
@@ -397,6 +455,7 @@ function renderRecipes(recipes) {
     recipes.forEach(function (recipe) {
         const ingredients = parseJsonField(recipe.ingredientes_json);
         const steps = parseJsonField(recipe.pasos_json);
+        const currentRating = getRatingForRecipe(recipe.id);
 
         const item = document.createElement("div");
 
@@ -419,6 +478,21 @@ function renderRecipes(recipes) {
         ${recipe.nivel_dificultad || "Sin dificultad"}
     </span>
 </div>
+
+${currentRating ? `
+    <div class="mt-2">
+        <span class="badge bg-warning text-dark">
+            Tu calificación: ${currentRating.puntuacion} ${renderStars(currentRating.puntuacion)}
+        </span>
+    </div>
+` : `
+    <div class="mt-2">
+        <span class="badge bg-light text-dark border">
+            Sin calificación
+        </span>
+    </div>
+`}
+
 
 <div class="d-flex align-items-center gap-2 mt-3">
     <select
@@ -515,7 +589,7 @@ async function deleteRecipe(id) {
 
 
 refreshRecipesBtn.addEventListener("click", function () {
-    loadRecipes();
+    loadRatingsAndRecipes();
 });
 
 async function rateRecipe(recipeId) {
@@ -555,6 +629,9 @@ async function rateRecipe(recipeId) {
         setRecipeMessage("Receta calificada correctamente", "success");
 
         ratingSelect.value = "";
+
+        await loadRatings();
+        loadRecipes();
 
     } catch (error) {
         setRecipeMessage(error.message, "error");
