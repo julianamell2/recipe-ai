@@ -72,3 +72,11 @@ input {
 .recipe-history-item li {
     margin-bottom: 5px;
 }
+
+.rating-select {
+    max-width: 130px;
+}
+
+.btn-outline-warning {
+    border-radius: 10px;
+}

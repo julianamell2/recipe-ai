@@ -19,6 +19,8 @@ const generatedRecipe = document.getElementById("generatedRecipe");
 const recipesList = document.getElementById("recipesList");
 const refreshRecipesBtn = document.getElementById("refreshRecipesBtn");
 
+let userRatings = [];
+
 function getToken() {
     return localStorage.getItem("token");
 }
@@ -409,14 +411,36 @@ function renderRecipes(recipes) {
                     </h4>
 
                     <div>
-                        <span class="badge bg-primary me-2">
-                            ${recipe.tiempo_estimado || "Sin tiempo"}
-                        </span>
+    <span class="badge bg-primary me-2">
+        ${recipe.tiempo_estimado || "Sin tiempo"}
+    </span>
 
-                        <span class="badge bg-secondary">
-                            ${recipe.nivel_dificultad || "Sin dificultad"}
-                        </span>
-                    </div>
+    <span class="badge bg-secondary">
+        ${recipe.nivel_dificultad || "Sin dificultad"}
+    </span>
+</div>
+
+<div class="d-flex align-items-center gap-2 mt-3">
+    <select
+        id="rating-${recipe.id}"
+        class="form-select form-select-sm rating-select"
+    >
+        <option value="">Puntuar</option>
+        <option value="1">1 ⭐</option>
+        <option value="2">2 ⭐⭐</option>
+        <option value="3">3 ⭐⭐⭐</option>
+        <option value="4">4 ⭐⭐⭐⭐</option>
+        <option value="5">5 ⭐⭐⭐⭐⭐</option>
+    </select>
+
+    <button
+        class="btn btn-outline-warning btn-sm"
+        onclick="rateRecipe(${recipe.id})"
+    >
+        Calificar
+    </button>
+</div>
+
                 </div>
 
                 <button
@@ -435,8 +459,8 @@ function renderRecipes(recipes) {
 
                     <ul>
                         ${ingredients.map(function (ingredient) {
-                            return `<li>${ingredient}</li>`;
-                        }).join("")}
+            return `<li>${ingredient}</li>`;
+        }).join("")}
                     </ul>
                 </div>
 
@@ -445,8 +469,8 @@ function renderRecipes(recipes) {
 
                     <ol>
                         ${steps.map(function (step) {
-                            return `<li>${step}</li>`;
-                        }).join("")}
+            return `<li>${step}</li>`;
+        }).join("")}
                     </ol>
                 </div>
 
@@ -493,6 +517,49 @@ async function deleteRecipe(id) {
 refreshRecipesBtn.addEventListener("click", function () {
     loadRecipes();
 });
+
+async function rateRecipe(recipeId) {
+    const token = getToken();
+
+    if (!token) {
+        setRecipeMessage("Debes iniciar sesión", "error");
+        return;
+    }
+
+    const ratingSelect = document.getElementById(`rating-${recipeId}`);
+
+    if (!ratingSelect || !ratingSelect.value) {
+        setRecipeMessage("Selecciona una puntuación antes de calificar", "error");
+        return;
+    }
+
+    const ratingValue = parseInt(ratingSelect.value);
+
+    try {
+        const response = await fetch(`${API_URL}/ratings/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                receta_id: recipeId,
+                puntuacion: ratingValue
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("No se pudo calificar la receta");
+        }
+
+        setRecipeMessage("Receta calificada correctamente", "success");
+
+        ratingSelect.value = "";
+
+    } catch (error) {
+        setRecipeMessage(error.message, "error");
+    }
+}
 
 const savedToken = localStorage.getItem("token");
 
