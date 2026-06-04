@@ -65,62 +65,113 @@
 
 
 
-        <section id="dashboard" class="mt-5 d-none">
+       <section id="dashboard" class="mt-5 d-none">
 
-            <h2 class="mb-4">Panel principal</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Panel principal</h2>
+            <p class="text-muted mb-0">
+                Gestiona tus ingredientes y genera recetas con IA.
+            </p>
+        </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <p class="mb-0 text-muted">
-                    Sesión iniciada correctamente.
-                </p>
+        <button
+            id="logoutBtn"
+            class="btn btn-outline-danger btn-sm"
+        >
+            Cerrar sesión
+        </button>
+    </div>
 
-                <button id="logoutBtn" class="btn btn-outline-danger btn-sm">
-                    Cerrar sesión
-                </button>
+    <div class="row">
+
+        <div class="col-md-5">
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+
+                    <h4 class="mb-3">Agregar ingrediente</h4>
+
+                    <form id="ingredientForm">
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Nombre del ingrediente
+                            </label>
+                            <input
+                                type="text"
+                                id="ingredientName"
+                                class="form-control"
+                                placeholder="Ej: pollo"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Cantidad
+                            </label>
+                            <input
+                                type="text"
+                                id="ingredientAmount"
+                                class="form-control"
+                                placeholder="Ej: 500g"
+                                required
+                            >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-success w-100"
+                        >
+                            Guardar ingrediente
+                        </button>
+
+                    </form>
+
+                    <div
+                        id="ingredientMessage"
+                        class="mt-3 text-center small"
+                    ></div>
+
+                </div>
             </div>
 
-            <div class="row">
+        </div>
 
-                <div class="col-md-4">
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-body">
-                            <h4>Ingredientes</h4>
-                            <p class="text-muted">
-                                Aquí se gestionará el inventario del usuario.
-                            </p>
-                        </div>
+        <div class="col-md-7">
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">Mis ingredientes</h4>
+
+                        <button
+                            id="refreshIngredientsBtn"
+                            class="btn btn-outline-primary btn-sm"
+                        >
+                            Actualizar
+                        </button>
                     </div>
-                </div>
 
-                <div class="col-md-4">
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-body">
-                            <h4>Recetas</h4>
-                            <p class="text-muted">
-                                Aquí se generarán recetas usando OpenRouter.
-                            </p>
-                        </div>
+                    <div id="ingredientsList">
+                        <p class="text-muted">
+                            No hay ingredientes cargados todavía.
+                        </p>
                     </div>
-                </div>
 
-                <div class="col-md-4">
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-body">
-                            <h4>Calificaciones</h4>
-                            <p class="text-muted">
-                                Aquí se calificarán las recetas generadas.
-                            </p>
-                        </div>
-                    </div>
                 </div>
-
             </div>
 
-        </section>
+        </div>
 
-    </main>
+    </div>
+
+</section>
+
+  </main>
 
     <script src="app.js"></script>
 </body>
-
 </html>

@@ -14,3 +14,11 @@ body {
 input {
     border-radius: 10px;
 }
+
+.ingredient-item {
+    transition: 0.2s ease;
+}
+
+.ingredient-item:hover {
+    transform: scale(1.01);
+}
