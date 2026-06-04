@@ -19,6 +19,18 @@ const generatedRecipe = document.getElementById("generatedRecipe");
 const recipesList = document.getElementById("recipesList");
 const refreshRecipesBtn = document.getElementById("refreshRecipesBtn");
 
+const loginCard = document.getElementById("loginCard");
+const registerCard = document.getElementById("registerCard");
+
+const registerForm = document.getElementById("registerForm");
+const registerName = document.getElementById("registerName");
+const registerEmail = document.getElementById("registerEmail");
+const registerPassword = document.getElementById("registerPassword");
+const registerMessage = document.getElementById("registerMessage");
+
+const showRegisterBtn = document.getElementById("showRegisterBtn");
+const showLoginBtn = document.getElementById("showLoginBtn");
+
 
 let userRatings = [];
 
@@ -28,7 +40,8 @@ function getToken() {
 
 function showDashboard() {
     dashboard.classList.remove("d-none");
-    loginForm.closest(".card").classList.add("d-none");
+    loginCard.classList.add("d-none");
+    registerCard.classList.add("d-none");
 
     loadIngredients();
     loadRatingsAndRecipes();
@@ -36,7 +49,8 @@ function showDashboard() {
 
 function showLogin() {
     dashboard.classList.add("d-none");
-    loginForm.closest(".card").classList.remove("d-none");
+    loginCard.classList.remove("d-none");
+    registerCard.classList.add("d-none");
 }
 
 function setLoginMessage(message, type) {
@@ -46,6 +60,16 @@ function setLoginMessage(message, type) {
         loginMessage.className = "mt-3 text-center small text-success";
     } else {
         loginMessage.className = "mt-3 text-center small text-danger";
+    }
+}
+
+function setRegisterMessage(message, type) {
+    registerMessage.textContent = message;
+
+    if (type === "success") {
+        registerMessage.className = "mt-3 text-center small text-success";
+    } else {
+        registerMessage.className = "mt-3 text-center small text-danger";
     }
 }
 
@@ -78,6 +102,16 @@ function parseJsonField(value) {
         return [];
     }
 }
+
+showRegisterBtn.addEventListener("click", function () {
+    loginCard.classList.add("d-none");
+    registerCard.classList.remove("d-none");
+});
+
+showLoginBtn.addEventListener("click", function () {
+    registerCard.classList.add("d-none");
+    loginCard.classList.remove("d-none");
+});
 
 loginForm.addEventListener("submit", async function (event) {
     event.preventDefault();
