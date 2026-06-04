@@ -12,6 +12,10 @@ const ingredientMessage = document.getElementById("ingredientMessage");
 const ingredientsList = document.getElementById("ingredientsList");
 const refreshIngredientsBtn = document.getElementById("refreshIngredientsBtn");
 
+const generateRecipeBtn = document.getElementById("generateRecipeBtn");
+const recipeMessage = document.getElementById("recipeMessage");
+const generatedRecipe = document.getElementById("generatedRecipe");
+
 function getToken() {
     return localStorage.getItem("token");
 }
@@ -45,6 +49,26 @@ function setIngredientMessage(message, type) {
         ingredientMessage.className = "mt-3 text-center small text-success";
     } else {
         ingredientMessage.className = "mt-3 text-center small text-danger";
+    }
+}
+
+function setRecipeMessage(message, type) {
+    recipeMessage.textContent = message;
+
+    if (type === "success") {
+        recipeMessage.className = "small mb-3 text-success";
+    } else if (type === "loading") {
+        recipeMessage.className = "small mb-3 text-primary";
+    } else {
+        recipeMessage.className = "small mb-3 text-danger";
+    }
+}
+
+function parseJsonField(value) {
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        return [];
     }
 }
 
@@ -231,6 +255,91 @@ async function deleteIngredient(id) {
 refreshIngredientsBtn.addEventListener("click", function () {
     loadIngredients();
 });
+
+generateRecipeBtn.addEventListener("click", async function () {
+    const token = getToken();
+
+    if (!token) {
+        setRecipeMessage("Debes iniciar sesión", "error");
+        return;
+    }
+
+    try {
+        generateRecipeBtn.disabled = true;
+        generateRecipeBtn.textContent = "Generando...";
+
+        setRecipeMessage("Generando receta con IA. Esto puede tardar unos segundos.", "loading");
+
+        const response = await fetch(`${API_URL}/recipes/generate`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("No se pudo generar la receta");
+        }
+
+        const recipe = await response.json();
+
+        if (recipe.message) {
+            setRecipeMessage(recipe.message, "error");
+            return;
+        }
+
+        renderGeneratedRecipe(recipe);
+
+        setRecipeMessage("Receta generada correctamente", "success");
+
+    } catch (error) {
+        setRecipeMessage(error.message, "error");
+    } finally {
+        generateRecipeBtn.disabled = false;
+        generateRecipeBtn.textContent = "Generar receta";
+    }
+});
+
+function renderGeneratedRecipe(recipe) {
+    const ingredients = parseJsonField(recipe.ingredientes_json);
+    const steps = parseJsonField(recipe.pasos_json);
+
+    generatedRecipe.innerHTML = `
+        <div class="recipe-result border rounded p-4 bg-light">
+
+            <h3 class="mb-3">
+                ${recipe.nombre_plato}
+            </h3>
+
+            <div class="mb-3">
+                <span class="badge bg-primary me-2">
+                    ${recipe.tiempo_estimado || "Sin tiempo estimado"}
+                </span>
+
+                <span class="badge bg-secondary">
+                    ${recipe.nivel_dificultad || "Sin dificultad"}
+                </span>
+            </div>
+
+            <h5>Ingredientes</h5>
+
+            <ul>
+                ${ingredients.map(function (ingredient) {
+                    return `<li>${ingredient}</li>`;
+                }).join("")}
+            </ul>
+
+            <h5>Pasos</h5>
+
+            <ol>
+                ${steps.map(function (step) {
+                    return `<li>${step}</li>`;
+                }).join("")}
+            </ol>
+
+        </div>
+    `;
+}
 
 const savedToken = localStorage.getItem("token");
 

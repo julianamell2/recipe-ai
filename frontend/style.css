@@ -22,3 +22,32 @@ input {
 .ingredient-item:hover {
     transform: scale(1.01);
 }
+
+.recipe-result {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.recipe-result h3 {
+    color: #212529;
+}
+
+.recipe-result ul,
+.recipe-result ol {
+    padding-left: 1.3rem;
+}
+
+.recipe-result li {
+    margin-bottom: 6px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
