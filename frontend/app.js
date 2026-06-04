@@ -113,6 +113,51 @@ showLoginBtn.addEventListener("click", function () {
     loginCard.classList.remove("d-none");
 });
 
+registerForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const newUser = {
+        nombre: registerName.value,
+        email: registerEmail.value,
+        password: registerPassword.value
+    };
+
+    try {
+        const response = await fetch(`${API_URL}/auth/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(newUser)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "No se pudo registrar el usuario");
+        }
+
+        setRegisterMessage(
+            "Usuario registrado correctamente. Ahora puedes iniciar sesión.",
+            "success"
+        );
+
+        document.getElementById("email").value = registerEmail.value;
+
+        registerName.value = "";
+        registerEmail.value = "";
+        registerPassword.value = "";
+
+        setTimeout(function () {
+            registerCard.classList.add("d-none");
+            loginCard.classList.remove("d-none");
+        }, 1000);
+
+    } catch (error) {
+        setRegisterMessage(error.message, "error");
+    }
+});
+
 loginForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
