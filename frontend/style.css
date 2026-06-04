@@ -51,3 +51,24 @@ input {
         transform: translateY(0);
     }
 }
+
+.recipe-history-item {
+    transition: 0.2s ease;
+}
+
+.recipe-history-item:hover {
+    transform: scale(1.005);
+}
+
+.recipe-history-item h4 {
+    color: #212529;
+}
+
+.recipe-history-item ul,
+.recipe-history-item ol {
+    padding-left: 1.3rem;
+}
+
+.recipe-history-item li {
+    margin-bottom: 5px;
+}
